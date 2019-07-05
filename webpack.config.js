@@ -142,12 +142,12 @@ globalCfg.output = {
   libraryTarget: "window",
   filename: "./fms.js"
 }
-globalCfg.plugins = [
-  new WrapperPlugin({
-    test: /\.js$/,
-    header: pfh,
-    footer: pff
-  }),
-]
+// globalCfg.plugins = [
+//   new WrapperPlugin({
+//     test: /\.js$/,
+//     header: pfh,
+//     footer: pff
+//   }),
+// ]
 
 module.exports = [ umdCfg, globalCfg ];

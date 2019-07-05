@@ -463,7 +463,7 @@ function convertToVexFlowData(data){
       }
     })
     voices.forEach((voice, vi)=>voice.forEach(note=>note.voiceIndex=vi));
-    console.error("voices", voices);
+    //console.error("voices", voices);
 
 
 
@@ -658,7 +658,7 @@ function convertToVexFlowData(data){
 
 
 function drawNotation(vexflowData, options){
-  console.error("[drawNotation]");
+  //console.error("[drawNotation]");
 
   let {startBarNum, partGap, noteC, bpm, trackLength, topMargin, leftMargin, measureWidth, groupGap} = options;
   // console.error({noteC, bpm, trackLength, topMargin, leftMargin, measureWidth, groupGap});
@@ -801,7 +801,7 @@ function drawNotation(vexflowData, options){
     tiesList.push(ties);
     return line;
   })
-  console.error("stavesList", stavesList);
+  //console.error("stavesList", stavesList);
 
   let connectorList = [];
   if(lineMax > 1){
@@ -1053,7 +1053,7 @@ function create(data, options?){
   console.error("data", data);
 
   let lineList = convertToVexFlowData(data.data);
-  console.error("lineList", lineList);
+  //console.error("lineList", lineList);
 
   options = Object.assign({}, defaultDrawOption, options);
   options.bpm = data.bpm;
@@ -1190,34 +1190,47 @@ function createSync(opt?){
 
 
 export default function init(data){
+  var ns = "http://www.w3.org/2000/svg";
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
   Tone.Transport.bpm.value = data.bpm;
   var synth, playData, totalTime, parts, btn, highlight;
+
+  var progressText = createNSElement("text", {x:100, y:10});
+  function msg(str){
+    progressText.textContent = str;
+  }
   //new AudioContext()
   //console.error("Tone.context", Tone.context);
+  msg("악기 로딩중...");
   Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
     console.error("instrument loaded");
     synth = piano;
+    msg("악보 변환중...");
     highlight = create(data, {scroll:true});
-    btn = createPlayBtn();
-    console.error("highlight", highlight);
+    // console.error("highlight", highlight);
     ready();
   })
 
+  function createNSElement(tagName, attr?){
+    var el = document.createElementNS(ns, "rect");
+    for(var o in attr){
+      el.setAttribute(o, attr[o]);
+    }
+    document["rootElement"].appendChild(el);
+    return el;
+  }
+
   function createPlayBtn(){
-    var ns = "http://www.w3.org/2000/svg";
-    var rect = document .createElementNS(ns, "rect");
-    //g.appendChild(rect);
-    rect.setAttribute ("width", "20");
-    rect.setAttribute ("height", "20");
-    rect.setAttribute ("x", "10");
-    rect.setAttribute ("y", "10");
-    rect.setAttribute ("fill", "#");
-    rect.addEventListener("click", play);
-    //g.innerHTML = '<rect id="playBtn" onclick="play()" fill="#ffffff" x="10" y="10" width="15" height="15" />';
-    document["rootElement"].appendChild(rect);
-    return rect;
+    var btn = createNSElement("rect", {
+      width: 20,
+      height: 20,
+      x: 10,
+      y: 10
+    });
+    //<text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>
+    btn.addEventListener("click", play);
+    return btn;
   }
 
   function getTotalTime(playData){
@@ -1247,11 +1260,15 @@ export default function init(data){
 
   function ready(){
     console.error("ready");
+    msg("재생 데이터 변환중...");
     playData = createPlayData(data);
     totalTime = getTotalTime(playData);
     console.error("totalTime", totalTime);
+    msg("스케쥴 생성중...");
     parts = schedule(playData, tick);
     isReady = true;
+    msg("재생준비 완료!");
+    btn = createPlayBtn();
     if(btn) btn.style.fill = "rgb(53, 236, 31)";
   }
 
