@@ -1197,10 +1197,12 @@ export function init(data){
   Tone.Transport.bpm.value = data.bpm;
   var synth, playData, totalTime, parts, btn, highlight;
 
-  var progressText = createNSElement("text", {x:100, y:10, fill:"#000"});
+  var progressText = createNSElement("text", {x:100, y:18, fill:"#000"});
   function msg(str){
-    console.info("progress:", str);
-    progressText.textContent = str;
+    setTimeout(function(){
+      console.info("progress:", str);
+      progressText.textContent = str;
+    })
   }
   //new AudioContext()
   //console.error("Tone.context", Tone.context);
