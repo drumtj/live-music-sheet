@@ -1190,14 +1190,16 @@ function createSync(opt?){
 
 
 export function init(data){
+  console.error("0.1");
   var ns = "http://www.w3.org/2000/svg";
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
   Tone.Transport.bpm.value = data.bpm;
   var synth, playData, totalTime, parts, btn, highlight;
 
-  var progressText = createNSElement("text", {x:100, y:10});
+  var progressText = createNSElement("text", {x:100, y:10, fill:"#000"});
   function msg(str){
+    console.info("progress:", str);
     progressText.textContent = str;
   }
   //new AudioContext()
@@ -1208,6 +1210,7 @@ export function init(data){
     synth = piano;
     msg("악보 변환중...");
     highlight = create(data, {scroll:true});
+    document["rootElement"].appendChild(progressText);
     // console.error("highlight", highlight);
     ready();
   })
