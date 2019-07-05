@@ -1192,7 +1192,7 @@ function createSync(opt?){
 }
 
 
-var version = "0.6";
+var version = "0.7";
 export function init(data){
   console.error(version);
   var ns = "http://www.w3.org/2000/svg";
