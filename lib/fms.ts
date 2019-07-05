@@ -1189,7 +1189,7 @@ function createSync(opt?){
 }
 
 
-export function init(data){
+export default function init(data){
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
   Tone.Transport.bpm.value = data.bpm;
