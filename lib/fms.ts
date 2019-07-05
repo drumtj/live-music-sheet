@@ -1211,7 +1211,7 @@ export function init(data){
   //new AudioContext()
   //console.error("Tone.context", Tone.context);
   msg("악기 로딩중...");
-  debugger;
+  //debugger;
   Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
     console.error("instrument loaded");
     synth = piano;
