@@ -1192,7 +1192,7 @@ function createSync(opt?){
 }
 
 
-var version = "0.8";
+var version = "0.9";
 export function init(data){
   console.error(version);
   var ns = "http://www.w3.org/2000/svg";
@@ -1211,6 +1211,7 @@ export function init(data){
   //new AudioContext()
   //console.error("Tone.context", Tone.context);
   msg("악기 로딩중...");
+  debugger;
   Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
     console.error("instrument loaded");
     synth = piano;
