@@ -1189,7 +1189,7 @@ function createSync(opt?){
 }
 
 
-export default function init(data){
+export function init(data){
   var ns = "http://www.w3.org/2000/svg";
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
