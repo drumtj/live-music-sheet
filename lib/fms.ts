@@ -846,6 +846,7 @@ function drawNotation(vexflowData, options){
     }
   }
 
+  /*
   var svg = document["rootElement"].firstChild;
   var root = document["rootElement"];
   svg.setAttribute("xmlns", root.getAttribute("xmlns"));
@@ -853,6 +854,7 @@ function drawNotation(vexflowData, options){
   // svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
   root.remove();
   document.appendChild(svg);
+  */
 
   return {
     renderer: renderer,
@@ -1190,7 +1192,7 @@ function createSync(opt?){
 }
 
 
-var version = "0.5";
+var version = "0.6";
 export function init(data){
   console.error(version);
   var ns = "http://www.w3.org/2000/svg";
