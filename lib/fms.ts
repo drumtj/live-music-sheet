@@ -849,7 +849,11 @@ function drawNotation(vexflowData, options){
   var svg = document["rootElement"].firstChild;
   var root = document["rootElement"];
   svg.setAttribute("xmlns", root.getAttribute("xmlns"));
-  svg.setAttribute("xmlns:link", root.getAttribute("xmlns:link"));
+  svg.setAttribute("xmlns:xlink", root.getAttribute("xmlns:xlink"));
+  var meta = document.createElement("meta");
+  meta.setAttribute("name", "viewport");
+  meta.setAttribute("content", "width=device-width, initial-scale=1");
+  svg.appendChild(meta);
   root.remove();
   document.appendChild(svg);
 
@@ -1189,8 +1193,9 @@ function createSync(opt?){
 }
 
 
+var version = "0.3";
 export function init(data){
-  console.error("0.2");
+  console.error(version);
   var ns = "http://www.w3.org/2000/svg";
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
@@ -1201,7 +1206,7 @@ export function init(data){
   function msg(str){
     setTimeout(function(){
       console.info("progress:", str);
-      progressText.textContent = str;
+      progressText.textContent = "v" + version + " " + str;
     })
   }
   //new AudioContext()
