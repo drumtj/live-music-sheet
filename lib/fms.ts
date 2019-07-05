@@ -1190,7 +1190,7 @@ function createSync(opt?){
 
 
 export function init(data){
-  console.error("0.1");
+  console.error("0.2");
   var ns = "http://www.w3.org/2000/svg";
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
@@ -1216,7 +1216,7 @@ export function init(data){
   })
 
   function createNSElement(tagName, attr?){
-    var el = document.createElementNS(ns, "rect");
+    var el = document.createElementNS(ns, tagName);
     for(var o in attr){
       el.setAttribute(o, attr[o]);
     }
