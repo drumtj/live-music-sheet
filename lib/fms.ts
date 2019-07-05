@@ -850,10 +850,7 @@ function drawNotation(vexflowData, options){
   var root = document["rootElement"];
   svg.setAttribute("xmlns", root.getAttribute("xmlns"));
   svg.setAttribute("xmlns:xlink", root.getAttribute("xmlns:xlink"));
-  var meta = document.createElement("meta");
-  meta.setAttribute("name", "viewport");
-  meta.setAttribute("content", "width=device-width, initial-scale=1");
-  svg.appendChild(meta);
+  svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
   root.remove();
   document.appendChild(svg);
 
@@ -1047,8 +1044,8 @@ let t64;
 
 let defaultDrawOption = {
   topMargin: 80,
-  leftMargin: 75,
-  measureWidth: 380,
+  leftMargin: 50,
+  measureWidth: 307,
   groupGap: 140,//bar group
   partGap: 70
 }
@@ -1193,7 +1190,7 @@ function createSync(opt?){
 }
 
 
-var version = "0.3";
+var version = "0.4";
 export function init(data){
   console.error(version);
   var ns = "http://www.w3.org/2000/svg";
