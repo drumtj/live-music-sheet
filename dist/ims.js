@@ -1,3 +1,4 @@
+(function(){
 var synth;
 //var t16 = 0.125; //for 120bpm
 function createPlayData(data){
@@ -1179,3 +1180,6 @@ function MusicSheet(){
     create
   };
 }
+
+start();
+})();
