@@ -1192,14 +1192,76 @@ function createSync(opt?){
 }
 
 
-export function loadAndInit(loader, data){
+///////loader///////
+var loader = (function(){
+  var i = 0, max, list, each, done;
+  function start(_list, _each, _done){
+    i = 0;
+    max = _list.length;
+    list = _list;
+    if(_done){
+      each = _each;
+      done = _done;
+    }else{
+      each = null;
+      done = _each;
+    }
+
+    load(list[i]);
+  }
+
+  function load(src){
+    if(i >= max) {
+      console.error("over index");
+      return;
+    }
+
+    console.error("load script:", src);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", src, true);
+    xhr.onreadystatechange = function(){
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          eval(xhr.responseText);
+          loadComplete();
+        } else {
+          console.error("실패: ", xhr.status);
+        }
+      }
+    }
+    xhr.send(null);
+  }
+
+  function loadComplete(){
+    if(++i < max){
+      if(each){
+        //setTimeout(function(){
+          each(i-1);
+        //})
+      }
+      load(list[i]);
+    }else{
+      console.error("load complete");
+      if(done) done();
+    }
+  }
+
+  return {
+    load: start
+  }
+})();
+//////////////
+
+
+export function loadAndInit(data){
   console.error("loadAndInit", version);
-  load(loader, function(){
+  load(function(){
     init(data);
   });
 }
 
-export function load(loader, done){
+export function load(done){
   var scripts = [
     "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.10/Tone.min.js",
@@ -1212,7 +1274,7 @@ export function load(loader, done){
 }
 
 
-var version = "0.14";
+var version = "0.16";
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?, parant?){
