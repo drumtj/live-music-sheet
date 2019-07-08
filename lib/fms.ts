@@ -1254,10 +1254,10 @@ var loader = (function(){
 //////////////
 
 
-export function loadAndInit(data){
+export function loadAndInit(data, opt?){
   console.error("loadAndInit", version);
   load(function(){
-    init(data);
+    init(data, opt);
   });
 }
 
@@ -1274,7 +1274,7 @@ export function load(done){
 }
 
 
-var version = "0.16";
+var version = "0.17";
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?, parant?){
@@ -1295,7 +1295,7 @@ export function msg(str){
   })
 }
 
-export function init(data){
+export function init(data, opt?){
   VF = Vex.Flow;
 
 
@@ -1314,7 +1314,9 @@ export function init(data){
     console.error("instrument loaded");
     synth = piano;
     msg("악보 변환중...");
-    highlight = create(data, {scroll:true});
+    opt = opt || {};
+    opt.scroll = true;
+    highlight = create(data, opt);
     document["rootElement"].appendChild(progressText);
     // console.error("highlight", highlight);
     ready();
