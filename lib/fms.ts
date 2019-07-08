@@ -1212,7 +1212,7 @@ export function load(loader, done){
 }
 
 
-var version = "0.12";
+var version = "0.13";
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?){
@@ -1223,7 +1223,7 @@ function createNSElement(tagName, attr?){
   document["rootElement"].appendChild(el);
   return el;
 }
-function msg(str){
+export function msg(str){
   if(!progressText) progressText = createNSElement("text", {x:100, y:18, fill:"#000"});
   setTimeout(function(){
     console.info("progress:", str);
@@ -1346,5 +1346,3 @@ export function init(data){
   //   stop: stop
   // }
 }
-
-msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 페이지를 클릭하세요");
