@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "play music sheet test",
   "scripts": {
+    "copy_test": "copy *.svg dist",
     "build": "webpack -p",
     "_release": "npm run build && npm run deploy && np --no-cleanup --yolo --no-release-draft",
-    "release": "npm run build && npm run deploy",
+    "release": "copy *.svg dist && npm run build && npm run deploy",
     "deploy": "git add -A && git commit -m 'deploy' && git push origin master && git subtree push --prefix dist origin gh-pages"
   },
   "keywords": [
