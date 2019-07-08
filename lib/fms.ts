@@ -1346,3 +1346,5 @@ export function init(data){
   //   stop: stop
   // }
 }
+
+msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 페이지를 클릭하세요");
