@@ -1206,28 +1206,42 @@ export function load(loader, done){
     "https://cdnjs.cloudflare.com/ajax/libs/vexflow/1.2.89/vexflow-min.js",
     "https://cdn.jsdelivr.net/npm/soundfont-player@0.11.0/dist/soundfont-player.min.js"
   ];
-  loader.load(scripts, done);
+  loader.load(scripts, function(i){
+    msg("스크립트 로딩(" + i + ")");
+  }, done);
 }
 
 
 var version = "0.12";
+var ns = "http://www.w3.org/2000/svg";
+var progressText;
+function createNSElement(tagName, attr?){
+  var el = document.createElementNS(ns, tagName);
+  for(var o in attr){
+    el.setAttribute(o, attr[o]);
+  }
+  document["rootElement"].appendChild(el);
+  return el;
+}
+function msg(str){
+  if(!progressText) progressText = createNSElement("text", {x:100, y:18, fill:"#000"});
+  setTimeout(function(){
+    console.info("progress:", str);
+    progressText.textContent = "v" + version + " " + str;
+  })
+}
+
 export function init(data){
   VF = Vex.Flow;
 
 
-  var ns = "http://www.w3.org/2000/svg";
+
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
   Tone.Transport.bpm.value = data.bpm;
   var synth, playData, totalTime, parts, btn, highlight;
 
-  var progressText = createNSElement("text", {x:100, y:18, fill:"#000"});
-  function msg(str){
-    setTimeout(function(){
-      console.info("progress:", str);
-      progressText.textContent = "v" + version + " " + str;
-    })
-  }
+
   //new AudioContext()
   //console.error("Tone.context", Tone.context);
   msg("악기 로딩중...");
@@ -1242,14 +1256,7 @@ export function init(data){
     ready();
   })
 
-  function createNSElement(tagName, attr?){
-    var el = document.createElementNS(ns, tagName);
-    for(var o in attr){
-      el.setAttribute(o, attr[o]);
-    }
-    document["rootElement"].appendChild(el);
-    return el;
-  }
+
 
   function createPlayBtn(){
     var btn = createNSElement("rect", {
