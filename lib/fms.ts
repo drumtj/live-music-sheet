@@ -1252,7 +1252,14 @@ var loader = (function(){
   }
 })();
 //////////////
-
+export function ready(data, opt?){
+  msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 페이지를 클릭하세요");
+  document["rootElement"].addEventListener("click", function rootClick(){
+    document["rootElement"].removeEventListener("click", rootClick);
+    console.error("start loading");
+    loadAndInit(data, opt);
+  });
+}
 
 export function loadAndInit(data, opt?){
   console.error("loadAndInit", version);
@@ -1274,7 +1281,7 @@ export function load(done){
 }
 
 
-var version = "0.17";
+var version = "0.18";
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?, parant?){
@@ -1429,3 +1436,6 @@ export function init(data, opt?){
   //   stop: stop
   // }
 }
+
+
+//////////////////////////
