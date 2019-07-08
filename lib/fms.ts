@@ -1192,9 +1192,27 @@ function createSync(opt?){
 }
 
 
+export function loadAndInit(loader, data){
+  load(loader, function(){
+    init(data);
+  });
+}
+
+export function load(loader, done){
+  var scripts = [
+    "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.10/Tone.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/vexflow/1.2.89/vexflow-min.js",
+    "https://cdn.jsdelivr.net/npm/soundfont-player@0.11.0/dist/soundfont-player.min.js"
+  ];
+  loader.load(scripts, done);
+}
+
+
 var version = "0.9";
 export function init(data){
   console.error(version);
+
   var ns = "http://www.w3.org/2000/svg";
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
@@ -1211,9 +1229,8 @@ export function init(data){
   //new AudioContext()
   //console.error("Tone.context", Tone.context);
   msg("악기 로딩중...");
-  if(window["ac"]) console.error("has ac");
   //debugger;
-  Soundfont.instrument(window["ac"] || Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
+  Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
     console.error("instrument loaded");
     synth = piano;
     msg("악보 변환중...");
