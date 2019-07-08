@@ -1211,10 +1211,10 @@ export function load(loader, done){
 
 var version = "0.10";
 export function init(data){
-  if(!(Tone && Vex && Soundfont)) {
-    console.error("not supported browser");
-    return;
-  }
+  // if(!(Tone && Vex && Soundfont)) {
+  //   console.error("not supported browser");
+  //   return;
+  // }
 
   console.error(version);
 
