@@ -1215,12 +1215,14 @@ export function load(loader, done){
 var version = "0.13";
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
-function createNSElement(tagName, attr?){
+function createNSElement(tagName, attr?, parant?){
   var el = document.createElementNS(ns, tagName);
-  for(var o in attr){
-    el.setAttribute(o, attr[o]);
+  if(attr){
+    for(var o in attr){
+      el.setAttribute(o, attr[o]);
+    }
   }
-  document["rootElement"].appendChild(el);
+  (parant || document["rootElement"]).appendChild(el);
   return el;
 }
 export function msg(str){
@@ -1258,16 +1260,32 @@ export function init(data){
 
 
 
-  function createPlayBtn(){
+  function createPlayBtn(callback){
+    var g = createNSElement("g", {x:10, y:10}) as any;
     var btn = createNSElement("rect", {
-      width: 20,
+      width: 60,
       height: 20,
       x: 10,
       y: 10
-    });
+    }, g) as any;
+    var txt = createNSElement("text", {
+      x: 10,
+      y: 10
+    }, g);
+    txt.textContent = "재생/정지";
+    g.btn = btn;
     //<text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>
-    btn.addEventListener("click", play);
-    return btn;
+    g.addEventListener("click", callback);
+    g.setColor = function(color){
+      btn.style.fill = color;
+    }
+    g.activeColor = function(){
+      btn.style.fill = "rgb(53, 236, 31)";
+    }
+    g.deactiveColor = function(){
+      btn.style.fill = "rgb(238, 51, 25)";
+    }
+    return g;
   }
 
   function getTotalTime(playData){
@@ -1305,15 +1323,15 @@ export function init(data){
     parts = schedule(playData, tick);
     isReady = true;
     msg("재생준비 완료!");
-    btn = createPlayBtn();
-    if(btn) btn.style.fill = "rgb(53, 236, 31)";
+    btn = createPlayBtn(play);
+    btn.activeColor();
   }
 
 
 
   function stop(){
     if(!isReady) return;
-    if(btn) btn.style.fill = "rgb(53, 236, 31)";
+    if(btn) btn.deactiveColor();
     console.error("stop");
     highlight.stop();
     parts.forEach(part=>part.stop());
@@ -1329,7 +1347,7 @@ export function init(data){
     }else{
       stop();
       console.error("play");
-      if(btn) btn.style.fill = "rgb(238, 51, 25)";
+      if(btn) btn.activeColor();
       parts.forEach(part=>{
         part.start("+0.1");
       });
