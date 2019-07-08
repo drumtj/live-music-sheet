@@ -1212,7 +1212,7 @@ export function load(loader, done){
 }
 
 
-var version = "0.13";
+var version = "0.14";
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?, parant?){
@@ -1263,16 +1263,17 @@ export function init(data){
   function createPlayBtn(callback){
     var g = createNSElement("g", {x:10, y:10}) as any;
     var btn = createNSElement("rect", {
-      width: 60,
+      width: 70,
       height: 20,
       x: 10,
-      y: 10
+      y: 5
     }, g) as any;
     var txt = createNSElement("text", {
       x: 10,
-      y: 10
+      y: 20
     }, g);
     txt.textContent = "재생/정지";
+    txt.setAttribute("pointer-events", "none");
     g.btn = btn;
     //<text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>
     g.addEventListener("click", callback);
@@ -1331,7 +1332,7 @@ export function init(data){
 
   function stop(){
     if(!isReady) return;
-    if(btn) btn.deactiveColor();
+    if(btn) btn.activeColor();
     console.error("stop");
     highlight.stop();
     parts.forEach(part=>part.stop());
@@ -1347,7 +1348,7 @@ export function init(data){
     }else{
       stop();
       console.error("play");
-      if(btn) btn.activeColor();
+      if(btn) btn.deactiveColor();
       parts.forEach(part=>{
         part.start("+0.1");
       });
