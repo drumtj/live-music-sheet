@@ -1209,8 +1209,13 @@ export function load(loader, done){
 }
 
 
-var version = "0.9";
+var version = "0.10";
 export function init(data){
+  if(!(Tone && Vex && Soundfont)) {
+    console.error("not supported browser");
+    return;
+  }
+
   console.error(version);
 
   var ns = "http://www.w3.org/2000/svg";
