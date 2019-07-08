@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.19";
+var version = "0.20";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1170,9 +1170,10 @@ export function init(data, opt?){
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
   Tone.Transport.bpm.value = data.bpm;
   var synth, playData, totalTime, parts, btn, highlight;
-
+  var isToneSynth;
   msg("악기 로딩중...");
   if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    isToneSynth = true;
     synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
     ready();
   }else{
@@ -1234,9 +1235,13 @@ export function init(data, opt?){
   var isReady;
 
   function tick(noteInfo, time){
-    noteInfo.notes.forEach(function(note, i){
-      synth.play(note, time, noteInfo.durations[i]);
-    })
+    if(isToneSynth){
+      synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
+    }else{
+      noteInfo.notes.forEach(function(note, i){
+        synth.play(note, time, noteInfo.durations[i]);
+      })
+    }
   }
 
   function ready(){
