@@ -2,6 +2,8 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
+var version = "0.19";
+
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
   //let t = t16 * (120 / data.bpm);
@@ -50,118 +52,6 @@ function schedule(playData, callback){
   })
 }
 
-/*
-function start(){
-
-  console.error("start tone setting");
-  //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
-  Tone.Transport.bpm.value = data.bpm;
-  var playData;
-  var totalTime;
-  var parts;
-  var btn;
-  var ms = MusicSheet();
-  var highlight;
-  //new AudioContext()
-  //console.error("Tone.context", Tone.context);
-  Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
-    console.error("instrument loaded");
-    synth = piano;
-    highlight = ms.create(data, {scroll:true});
-    btn = createPlayBtn();
-    console.error("highlight", highlight);
-    ready();
-  })
-
-  function createPlayBtn(){
-    var ns = "http://www.w3.org/2000/svg";
-    var rect = document .createElementNS(ns, "rect");
-    //g.appendChild(rect);
-    rect.setAttribute ("width", "20");
-    rect.setAttribute ("height", "20");
-    rect.setAttribute ("x", "10");
-    rect.setAttribute ("y", "10");
-    rect.setAttribute ("fill", "#");
-    rect.onclick = play;
-    //g.innerHTML = '<rect id="playBtn" onclick="play()" fill="#ffffff" x="10" y="10" width="15" height="15" />';
-    document.rootElement.appendChild(rect);
-    return rect;
-  }
-
-  function getTotalTime(playData){
-    var max = 0;
-    playData.forEach(function(events){
-      var last = events[events.length-1];
-      var maxDu = 0;
-      last[1].durations.forEach(function(d){
-        if(d > maxDu){
-          maxDu = d;
-        }
-      })
-      if(last[0] + maxDu > max){
-        max = last[0] + maxDu;
-      }
-    })
-    return max;
-  }
-
-  function ready(){
-    console.error("ready");
-    playData = createPlayData(data);
-    totalTime = getTotalTime(playData);
-    console.error("totalTime", totalTime);
-    parts = schedule(playData);
-    console.error(btn);
-    if(btn) btn.style.fill = "rgb(53, 236, 31)";
-  }
-
-  function schedule(tracks){
-    console.error("start schedule");
-    return tracks.map(events=>{
-      return new Tone.Part((time, noteInfo)=>{
-        if(noteInfo.notes){
-          //synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
-
-          noteInfo.notes.forEach(function(note, i){
-            synth.play(note, time, noteInfo.durations[i]);
-          })
-
-        }
-      }, events);
-    })
-  }
-
-  function stop(){
-    if(btn) btn.style.fill = "rgb(53, 236, 31)";
-    console.error("stop");
-    highlight.stop();
-    parts.forEach(part=>part.stop());
-    Tone.Transport.stop();
-    Tone.Transport.clear(endScheduleId);
-  }
-
-  var endScheduleId;
-  function play(){
-    if(Tone.Transport.state == "started"){
-      stop();
-    }else{
-      stop();
-      console.error("play");
-      if(btn) btn.style.fill = "rgb(238, 51, 25)";
-      parts.forEach(part=>{
-        part.start("+0.1");
-      });
-      highlight.start();
-      endScheduleId = Tone.Transport.schedule(function(time){
-      	stop();
-      }, "+" + (totalTime+0.5));
-      Tone.Transport.start("+0.5");
-    }
-  }
-
-  window.play = play;
-}
-*/
 
 var VF;
 
@@ -207,12 +97,6 @@ const convertKey = (note, key)=>{
   return keyMap[key][i];
 }
 
-//"2ddr" 과 같은 duration을 key로 박자정보를 매칭.
-//만들어진 note정보를 bar단위로 박자를 계산하는 검수용으로 활용
-let dkeyScoreTable = Object.keys(scoreTable).reduce((r,n)=>{
-  r[scoreTable[n].score + scoreTable[n].dot] = scoreTable[n];
-  return r;
-}, {})
 
 //역순
 let scoreIndex64b = Object.keys(scoreTable).map(n=>parseInt(n)).sort((a,b)=>-a-b);
@@ -227,32 +111,7 @@ let fillBlack = {fillStyle: "black", strokeStyle: "black"};
 //   return b64ToDurations(time / Tone.Time("64n").toSeconds(), rest);
 // }
 
-function checkBarBeat(notes){
-  console.error("checkBarBeat", notes);
-  if(!(Array.isArray(notes) && notes.length && notes[0].duration)){
-    throw new Error("wrong param");
-  }
 
-  let beatSum1 = 0;
-  let beatSum2 = 0;
-  notes.forEach(note=>{
-    beatSum1 += dkeyScoreTable[note.duration.replace(/r/g,'')].b64;
-    beatSum2 += note.length;
-  })
-
-  console.error("beatsum1", beatSum1);
-  console.error("beatsum2", beatSum2);
-
-  if(beatSum1 != beatSum2){
-    return false;
-  }
-
-  if(isNaN(beatSum1)){
-    return false;
-  }
-
-  return beatSum1 == 16 * 4;
-}
 
 function b64ToDurations(b64, rest?){
   let r = rest ? "r" : "";
@@ -1281,7 +1140,7 @@ export function load(done){
 }
 
 
-var version = "0.18";
+
 var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?, parant?){
@@ -1312,22 +1171,18 @@ export function init(data, opt?){
   Tone.Transport.bpm.value = data.bpm;
   var synth, playData, totalTime, parts, btn, highlight;
 
-
-  //new AudioContext()
-  //console.error("Tone.context", Tone.context);
   msg("악기 로딩중...");
-  //debugger;
-  Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
-    console.error("instrument loaded");
-    synth = piano;
-    msg("악보 변환중...");
-    opt = opt || {};
-    opt.scroll = true;
-    highlight = create(data, opt);
-    document["rootElement"].appendChild(progressText);
-    // console.error("highlight", highlight);
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
     ready();
-  })
+  }else{
+    Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
+      console.error("instrument loaded");
+      synth = piano;
+      //document["rootElement"].appendChild(progressText);
+      ready();
+    })
+  }
 
 
 
@@ -1346,7 +1201,6 @@ export function init(data, opt?){
     txt.textContent = "재생/정지";
     txt.setAttribute("pointer-events", "none");
     g.btn = btn;
-    //<text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>
     g.addEventListener("click", callback);
     g.setColor = function(color){
       btn.style.fill = color;
@@ -1387,6 +1241,11 @@ export function init(data, opt?){
 
   function ready(){
     console.error("ready");
+    msg("악보 변환중...");
+    opt = opt || {};
+    opt.scroll = true;
+    highlight = create(data, opt);
+
     msg("재생 데이터 변환중...");
     playData = createPlayData(data);
     totalTime = getTotalTime(playData);
@@ -1430,11 +1289,6 @@ export function init(data, opt?){
       Tone.Transport.start("+0.5");
     }
   }
-
-  // return {
-  //   play: play,
-  //   stop: stop
-  // }
 }
 
 
