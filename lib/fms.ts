@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.25";
+var version = "0.26";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1182,6 +1182,26 @@ export function msg(str){
   })
 }
 
+export function base64ToFloat32Array(dataURI){
+  var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+  var base64 = dataURI.substring(base64Index);
+  var blob	= window.atob(base64),	// Base64 string converted to a char array
+	fLen	= blob.length / Float32Array.BYTES_PER_ELEMENT,						// How many floats can be made, but be even
+	dView	= new DataView( new ArrayBuffer(Float32Array.BYTES_PER_ELEMENT) ),	// ArrayBuffer/DataView to convert 4 bytes into 1 float.
+	fAry	= new Float32Array(fLen),											// Final Output at the correct size
+	p		= 0;																// Position
+
+  for(var j=0; j < fLen; j++){
+  	p = j * 4;
+  	dView.setUint8(0,blob.charCodeAt(p));
+  	dView.setUint8(1,blob.charCodeAt(p+1));
+  	dView.setUint8(2,blob.charCodeAt(p+2));
+  	dView.setUint8(3,blob.charCodeAt(p+3));
+  	fAry[j] = dView.getFloat32(0,true);
+  }
+  return fAry;
+}
+
 export function base64ToBuffer(dataURI) {
     var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
     var base64 = dataURI.substring(base64Index);
@@ -1192,7 +1212,7 @@ export function base64ToBuffer(dataURI) {
     for (var i = 0; i < buffer.byteLength; i++) {
         bytes[i] = binary.charCodeAt(i) & 0xFF;
     }
-    return buffer;
+    return bytes;
 };
 
 var BASE64_MARKER = ';base64,';
