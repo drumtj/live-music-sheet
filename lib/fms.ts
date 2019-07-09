@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.21";
+var version = "0.22";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -76,6 +76,22 @@ let scoreTable = {
   "64": {score: 1, dot: "", beat: 4, b64: 64, b16: 16},
   "96": {score: 1, dot: "d", beat: 6, b64: 96, b16: 24},
   "112": {score: 1, dot: "dd", beat: 7, b64: 112, b16: 28}
+}
+
+const downConvertNoteMap = {
+  C:"B", D:"C", E:"D", F:"E", G:"F", A:"G", B:"A"
+}
+
+// export const downConvertNoteFromMidi = midi=>{
+//   return downConvertNote(Midi(midi));
+// }
+
+export const downConvertNote = note=>{
+  let c = note.split('');
+  if(c[1] == "b"){
+    return downConvertNoteMap[c[0]] + (c[0] == "F" || c[0] == "C" ? "" : "#") + c[2];
+  }
+  return note;
 }
 
 export const toMidi = (note) => {
@@ -1164,6 +1180,34 @@ export function msg(str){
     console.info("progress:", str);
     progressText.textContent = "v" + version + " " + str;
   })
+}
+
+export function base64ToBuffer(dataURI) {
+    var binary = window.atob(dataURI);
+    var buffer = new ArrayBuffer(binary.length);
+    var bytes = new Uint8Array(buffer);
+    for (var i = 0; i < buffer.byteLength; i++) {
+        bytes[i] = binary.charCodeAt(i) & 0xFF;
+    }
+    return buffer;
+};
+
+var BASE64_MARKER = ';base64,';
+export function convertDataURIToBinary(dataURI) {
+  var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+  var base64 = dataURI.substring(base64Index);
+  var raw = window.atob(base64);
+  var rawLength = raw.length;
+  var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+  for(var i = 0; i < rawLength; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+  return array;
+}
+
+export function base64ToBlob(dataURI){
+  new Blob([convertDataURIToBinary(dataURI)], {type : 'audio/mp3'});
 }
 
 var synth;
