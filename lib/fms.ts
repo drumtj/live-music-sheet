@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.20";
+var version = "0.21";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1056,6 +1056,7 @@ function createSync(opt?){
 
 
 ///////loader///////
+var E = eval;
 export var loader = (function(){
   var i = 0, max, list, each, done;
   function start(_list, _each, _done){
@@ -1086,7 +1087,7 @@ export var loader = (function(){
     xhr.onreadystatechange = function(){
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
-          eval(xhr.responseText);
+          E(xhr.responseText);
           loadComplete();
         } else {
           console.error("실패: ", xhr.status);
