@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.26";
+var version = "0.27";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
