@@ -78,6 +78,10 @@ let scoreTable = {
   "112": {score: 1, dot: "dd", beat: 7, b64: 112, b16: 28}
 }
 
+export const toMidi = (note) => {
+  return noteToMidiMap[note];
+}
+
 const sortNote = (notes, desc?) => {
   //이것은 새배열반환
   // return notes.map(key=>{
@@ -1052,7 +1056,7 @@ function createSync(opt?){
 
 
 ///////loader///////
-var loader = (function(){
+export var loader = (function(){
   var i = 0, max, list, each, done;
   function start(_list, _each, _done){
     i = 0;
@@ -1129,7 +1133,7 @@ export function loadAndInit(data, opt?){
 
 export function load(done){
   var scripts = [
-    "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js",
+    //"https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.10/Tone.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/vexflow/1.2.89/vexflow-min.js",
     "https://cdn.jsdelivr.net/npm/soundfont-player@0.11.0/dist/soundfont-player.min.js"
@@ -1161,6 +1165,12 @@ export function msg(str){
   })
 }
 
+var synth;
+
+// export function setSynth(s){
+//   synth = s;
+// }
+
 export function init(data, opt?){
   VF = Vex.Flow;
 
@@ -1169,20 +1179,34 @@ export function init(data, opt?){
   console.error("start tone setting");
   //synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
   Tone.Transport.bpm.value = data.bpm;
-  var synth, playData, totalTime, parts, btn, highlight;
-  var isToneSynth;
-  msg("악기 로딩중...");
-  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
-    isToneSynth = true;
-    synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
+  var playData, totalTime, parts, btn, highlight;
+  var playSynthFunc;
+  if(opt.synth && opt.playSynthFunc){
+    synth = opt.synth;
+    playSynthFunc = opt.playSynthFunc;
     ready();
   }else{
-    Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
-      console.error("instrument loaded");
-      synth = piano;
-      //document["rootElement"].appendChild(progressText);
+    msg("악기 로딩중...");
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      //isToneSynth = true;
+      synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
+      playSynthFunc = function(synth, noteInfo, time){
+        synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
+      }
       ready();
-    })
+    }else{
+      Soundfont.instrument(Tone.context._context, 'acoustic_grand_piano').then(function (piano) {
+        console.error("instrument loaded");
+        synth = piano;
+        playSynthFunc = function(synth, noteInfo, time){
+          noteInfo.notes.forEach(function(note, i){
+            synth.play(note, time, noteInfo.durations[i]);
+          })
+        }
+        //document["rootElement"].appendChild(progressText);
+        ready();
+      })
+    }
   }
 
 
@@ -1235,13 +1259,14 @@ export function init(data, opt?){
   var isReady;
 
   function tick(noteInfo, time){
-    if(isToneSynth){
-      synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
-    }else{
-      noteInfo.notes.forEach(function(note, i){
-        synth.play(note, time, noteInfo.durations[i]);
-      })
-    }
+    playSynthFunc(synth, noteInfo, time);
+    // if(isToneSynth){
+    //   synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
+    // }else{
+    //   noteInfo.notes.forEach(function(note, i){
+    //     synth.play(note, time, noteInfo.durations[i]);
+    //   })
+    // }
   }
 
   function ready(){
@@ -1256,7 +1281,7 @@ export function init(data, opt?){
     totalTime = getTotalTime(playData);
     console.error("totalTime", totalTime);
     msg("스케쥴 생성중...");
-    parts = schedule(playData, tick);
+    parts = schedule(playData, playSynthFunc);
     isReady = true;
     msg("재생준비 완료!");
     btn = createPlayBtn(play);
