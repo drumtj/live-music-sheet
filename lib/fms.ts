@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.31";
+var version = "0.32";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1291,13 +1291,23 @@ export function init(data, opt?){
       for(let note in base64Sample){
         sample[downConvertNote(note)] = URL.createObjectURL(new Blob([convertDataURIToBinary(base64Sample[note])], {type : 'audio/mp3'}));
       }
-
-      synth = new Tone.Sampler(sample, function(){
+      ////
+      // synth = new Tone.Sampler(sample, function(){
+      //   ready();
+      // }).toMaster();
+      //
+      // playSynthFunc = function(synth, noteInfo, time){
+      //   synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
+      // }
+      ////
+      synth = new Tone.Players(sample, function(){
         ready();
       }).toMaster();
 
       playSynthFunc = function(synth, noteInfo, time){
-        synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
+        for(var i=0; i<noteInfo.notes.length; i++){
+          synth.get(noteInfo.notes[i]).start(time, 0, noteInfo.durations[i]);
+        }
       }
     })
     /*
