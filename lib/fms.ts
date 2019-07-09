@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.24";
+var version = "0.25";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1183,7 +1183,10 @@ export function msg(str){
 }
 
 export function base64ToBuffer(dataURI) {
-    var binary = window.atob(dataURI);
+    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+    var base64 = dataURI.substring(base64Index);
+
+    var binary = window.atob(base64);
     var buffer = new ArrayBuffer(binary.length);
     var bytes = new Uint8Array(buffer);
     for (var i = 0; i < buffer.byteLength; i++) {
@@ -1206,9 +1209,9 @@ export function convertDataURIToBinary(dataURI) {
   return array;
 }
 
-export function base64ToBlob(dataURI){
-  new Blob([convertDataURIToBinary(dataURI)], {type : 'audio/mp3'});
-}
+// export function base64ToBlob(dataURI){
+//   new Blob([convertDataURIToBinary(dataURI)], {type : 'audio/mp3'});
+// }
 
 var synth;
 
