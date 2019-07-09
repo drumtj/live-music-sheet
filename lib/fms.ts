@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.29";
+var version = "0.30";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1287,7 +1287,7 @@ export function init(data, opt?){
     ], function(){
       //console.error(MIDI);
       let sample = {};
-      let base64Sample = window['MIDI'].SoundFont[instName];
+      let base64Sample = window['MIDI'].Soundfont[instName];
       for(let note in base64Sample){
         sample[downConvertNote(note)] = URL.createObjectURL(new Blob([convertDataURIToBinary(base64Sample[note])], {type : 'audio/mp3'}));
       }
