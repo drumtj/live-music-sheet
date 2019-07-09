@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.30";
+var version = "0.31";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1295,6 +1295,10 @@ export function init(data, opt?){
       synth = new Tone.Sampler(sample, function(){
         ready();
       }).toMaster();
+
+      playSynthFunc = function(synth, noteInfo, time){
+        synth.triggerAttackRelease(noteInfo.notes, noteInfo.durations, time);
+      }
     })
     /*
     if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
