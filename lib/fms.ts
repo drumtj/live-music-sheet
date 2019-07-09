@@ -1281,7 +1281,7 @@ export function init(data, opt?){
     totalTime = getTotalTime(playData);
     console.error("totalTime", totalTime);
     msg("스케쥴 생성중...");
-    parts = schedule(playData, playSynthFunc);
+    parts = schedule(playData, tick);
     isReady = true;
     msg("재생준비 완료!");
     btn = createPlayBtn(play);
