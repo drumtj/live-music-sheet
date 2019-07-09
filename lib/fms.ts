@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.27";
+var version = "0.28";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1271,7 +1271,7 @@ export function init(data, opt?){
             synth.play(note, time, noteInfo.durations[i]);
           })
         }
-        //document["rootElement"].appendChild(progressText);
+        document["rootElement"].appendChild(progressText);
         ready();
       })
     }
