@@ -1182,7 +1182,7 @@ export function init(data, opt?){
   Tone.Transport.bpm.value = data.bpm;
   var playData, totalTime, parts, btn, highlight;
   var playSynthFunc;
-  if(opt.synth && opt.playSynthFunc){
+  if(opt && opt.synth && opt.playSynthFunc){
     synth = opt.synth;
     playSynthFunc = opt.playSynthFunc;
     ready();
