@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.28";
+var version = "0.29";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1075,7 +1075,7 @@ function createSync(opt?){
 var E = eval;
 export var loader = (function(){
   var i = 0, max, list, each, done;
-  function start(_list, _each, _done){
+  function start(_list, _each, _done?){
     i = 0;
     max = _list.length;
     list = _list;
@@ -1152,8 +1152,8 @@ export function load(done){
   var scripts = [
     //"https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.10/Tone.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/vexflow/1.2.89/vexflow-min.js",
-    "https://cdn.jsdelivr.net/npm/soundfont-player@0.11.0/dist/soundfont-player.min.js"
+    "https://cdnjs.cloudflare.com/ajax/libs/vexflow/1.2.89/vexflow-min.js"
+    //"https://cdn.jsdelivr.net/npm/soundfont-player@0.11.0/dist/soundfont-player.min.js"
   ];
   loader.load(scripts, function(i){
     msg("스크립트 로딩(" + i + ")");
@@ -1233,11 +1233,37 @@ export function convertDataURIToBinary(dataURI) {
 //   new Blob([convertDataURIToBinary(dataURI)], {type : 'audio/mp3'});
 // }
 
-var synth;
 
-// export function setSynth(s){
-//   synth = s;
-// }
+////
+//// webaudiofont test
+////
+
+// var instName = "0000_GeneralUserGS_sf2_file";//"0001_FluidR3_GM_sf2_file";
+// FMS.loader.load([
+//   "https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js",
+//   "https://surikov.github.io/webaudiofontdata/sound/"+instName+".js"
+// ], function(){
+//   console.error(MIDI);
+//   return;
+//
+//   var ac = Tone.context._context;
+//   var player = new WebAudioFontPlayer();
+//   player.loader.decodeAfterLoading(ac, '_tone_' + instName);
+//   var preset = window['_tone_' + instName];
+//   FMS.init(data, {synth:player, playSynthFunc:function(synth, noteInfo, time){
+//     for(var i=0; i<noteInfo.notes.length; i++){
+//       synth.queueWaveTable(ac, ac.destination, preset, time, FMS.toMidi(noteInfo.notes[i]), noteInfo.durations[i]);
+//     }
+//   }})
+//
+// })
+
+////
+////
+////
+
+
+var synth;
 
 export function init(data, opt?){
   VF = Vex.Flow;
@@ -1255,6 +1281,22 @@ export function init(data, opt?){
     ready();
   }else{
     msg("악기 로딩중...");
+    let instName = "acoustic_grand_piano";
+    loader.load([
+      "https://gleitz.github.io/midi-js-soundfonts/MusyngKite/"+instName+"-mp3.js"
+    ], function(){
+      //console.error(MIDI);
+      let sample = {};
+      let base64Sample = window['MIDI'].SoundFont[instName];
+      for(let note in base64Sample){
+        sample[downConvertNote(note)] = URL.createObjectURL(new Blob([convertDataURIToBinary(base64Sample[note])], {type : 'audio/mp3'}));
+      }
+
+      synth = new Tone.Sampler(sample, function(){
+        ready();
+      }).toMaster();
+    })
+    /*
     if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
       //isToneSynth = true;
       synth = new Tone.PolySynth(68, Tone.Synth).toMaster();
@@ -1271,11 +1313,14 @@ export function init(data, opt?){
             synth.play(note, time, noteInfo.durations[i]);
           })
         }
-        document["rootElement"].appendChild(progressText);
+        //document["rootElement"].appendChild(progressText);
         ready();
       })
     }
+    */
   }
+
+
 
 
 
