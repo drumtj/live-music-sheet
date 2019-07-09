@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.23";
+var version = "0.24";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1192,7 +1192,7 @@ export function base64ToBuffer(dataURI) {
     return buffer;
 };
 
-var BASE64_MARKER = ';base64,//';
+var BASE64_MARKER = ';base64,';
 export function convertDataURIToBinary(dataURI) {
   var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
   var base64 = dataURI.substring(base64Index);
