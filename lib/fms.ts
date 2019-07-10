@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.36";
+var version = "0.37";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1137,11 +1137,12 @@ export function ready(data, opt?){
     console.error("start loading");
     if(!opt) opt = {};
     opt.instrument = instName;
+    opt.autoStart = true;
     loadAndInit(data, opt);
   }
 
   if(opt && opt.instrument){
-    msg("악보 연주가 가능한 모드입니다. 연주준비를 페이지를 클릭해주세요");
+    msg("악보 연주가 가능한 모드입니다. 페이지를 클릭하면 연주를 시작합니다.");
     document["rootElement"].addEventListener("click", function rootClick(){
       document["rootElement"].removeEventListener("click", rootClick);
       go(opt.instrument);
@@ -1149,7 +1150,7 @@ export function ready(data, opt?){
   }else{
     msg("악기 목록 로딩중..");
     loader.load(["http://gleitz.github.io/midi-js-soundfonts/MusyngKite/names.json"], function(evalList){
-      msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 악기를 선택해주세요");
+      msg("악보 연주가 가능한 모드입니다. 악기를 선택하면 연주를 시작합니다.");
       var instList = evalList[0];
       var sx=100, x=sx, y=45, gapX=10, gapY=10, limitX=1200;
       instList.forEach(name=>{
@@ -1472,6 +1473,10 @@ export function init(data, opt?){
     msg("재생준비 완료!");
     btn = createPlayBtn(play);
     btn.activeColor();
+
+    if(opt.autoStart){
+      play();
+    }
   }
 
 
