@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.33";
+var version = "0.34";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1287,7 +1287,7 @@ export function init(data, opt?){
     ready();
   }else{
     msg("악기 로딩중...");
-    let instName = "acoustic_grand_piano";
+    let instName = (opt && opt.instrument) ? opt.instrument : "acoustic_grand_piano";
     loader.load([
       "https://gleitz.github.io/midi-js-soundfonts/MusyngKite/"+instName+"-mp3.js"
     ], function(){
