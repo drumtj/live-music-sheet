@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.32";
+var version = "0.33";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1227,6 +1227,12 @@ export function convertDataURIToBinary(dataURI) {
     array[i] = raw.charCodeAt(i);
   }
   return array;
+}
+
+export function getSoundfontUrl (name, sf?, format?) {
+  format = format === 'ogg' ? format : 'mp3'
+  sf = sf === 'FluidR3_GM' ? sf : 'MusyngKite'
+  return 'https://gleitz.github.io/midi-js-soundfonts/' + sf + '/' + name + '-' + format + '.js'
 }
 
 // export function base64ToBlob(dataURI){
