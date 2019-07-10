@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.37";
+var version = "0.38";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1150,18 +1150,25 @@ export function ready(data, opt?){
   }else{
     msg("악기 목록 로딩중..");
     loader.load(["http://gleitz.github.io/midi-js-soundfonts/MusyngKite/names.json"], function(evalList){
-      msg("악보 연주가 가능한 모드입니다. 악기를 선택하면 연주를 시작합니다.");
+      msg("악기를 선택하면 연주를 시작합니다.");
       var instList = evalList[0];
-      var sx=100, x=sx, y=45, gapX=10, gapY=10, limitX=1200;
+      var sx=10, x=sx, y=10, gapX=10, gapY=10, limitX=1200;
+      var g = createNSElement("g", {x:0, y:45});
+      var bgRect = createNSElement("rect", {x:0, y:0, width:1200, height:25, fill:"gray", stroke:"black"}, g);
       instList.forEach(name=>{
         var btn = createButton(name, {x:x, y:y, click:function(){
+          g.parentElement.removeChild(g);
           go(name);
-        }})
+        }}, g);
         var rect = btn.getBoundingClientRect();
-        x += rect.width + gapX;
-        if(x > limitX){
+        if(x + rect.width > limitX){
           x = sx;
           y += rect.height + gapY;
+          btn.setAttribute("transform", `translate(${x},${y})`);
+          x += rect.width + gapX;
+          bgRect.setAttribute("height", y + 25 + '');
+        }else{
+          x += rect.width + gapX;
         }
       })
     })
@@ -1305,9 +1312,9 @@ export function getSoundfontUrl (name, sf?, format?) {
 ////
 ////
 
-function createButton(text, opt?){
+function createButton(text, opt?, parent?){
   opt = opt || {};
-  var g = createNSElement("g", {transform:`translate(${opt.x||0},${opt.y||0})`}) as any;
+  var g = createNSElement("g", {transform:`translate(${opt.x||0},${opt.y||0})`}, parent) as any;
   var txt = createNSElement("text", {x:0, y:0, text:text, fill:opt.color||"black"}, g) as any;
   var r = txt.getBBox();
   txt.setAttribute("pointer-events", "none");
