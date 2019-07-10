@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.34";
+var version = "0.35";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1074,8 +1074,9 @@ function createSync(opt?){
 ///////loader///////
 var E = eval;
 export var loader = (function(){
-  var i = 0, max, list, each, done;
+  var i = 0, max, list, each, done, evalList;
   function start(_list, _each, _done?){
+    evalList = [];
     i = 0;
     max = _list.length;
     list = _list;
@@ -1103,8 +1104,7 @@ export var loader = (function(){
     xhr.onreadystatechange = function(){
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
-          E(xhr.responseText);
-          loadComplete();
+          loadComplete(E(xhr.responseText));
         } else {
           console.error("실패: ", xhr.status);
         }
@@ -1113,17 +1113,17 @@ export var loader = (function(){
     xhr.send(null);
   }
 
-  function loadComplete(){
+  function loadComplete(v){
+    evalList.push(v);
+    if(each){
+      each(i, v);
+    }
+
     if(++i < max){
-      if(each){
-        //setTimeout(function(){
-          each(i-1);
-        //})
-      }
       load(list[i]);
     }else{
       console.error("load complete");
-      if(done) done();
+      if(done) done(evalList);
     }
   }
 
@@ -1133,12 +1133,44 @@ export var loader = (function(){
 })();
 //////////////
 export function ready(data, opt?){
-  msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 페이지를 클릭하세요");
-  document["rootElement"].addEventListener("click", function rootClick(){
-    document["rootElement"].removeEventListener("click", rootClick);
+  function go(instName){
     console.error("start loading");
+    if(!opt) opt = {};
+    opt.instrument = instName;
     loadAndInit(data, opt);
-  });
+  }
+
+  if(opt && opt.instrument){
+    msg("악보 연주가 가능한 모드입니다. 연주준비를 페이지를 클릭해주세요");
+    document["rootElement"].addEventListener("click", function rootClick(){
+      document["rootElement"].removeEventListener("click", rootClick);
+      go(opt.instrument);
+    })
+  }else{
+    msg("악기 목록 로딩중..");
+    loader.load(["http://gleitz.github.io/midi-js-soundfonts/MusyngKite/names.json"], function(evalList){
+      msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 악기를 선택해주세요");
+      var instList = evalList[0];
+      var sx=100, x=sx, y=25, gapX=10, gapY=10, limitX=1200;
+      instList.forEach(name=>{
+        var btn = createButton(name, {x:x, y:y, click:function(){
+          go(name);
+        }})
+        var rect = btn.getBoundingClientRect();
+        x += rect.width + gapX;
+        if(x > limitX){
+          x = sx;
+          y += rect.height + gapY;
+        }
+      })
+    })
+  }
+
+    // document["rootElement"].addEventListener("click", function rootClick(){
+    //   document["rootElement"].removeEventListener("click", rootClick);
+    //   console.error("start loading");
+    //   loadAndInit(data, opt);
+    // });
 }
 
 export function loadAndInit(data, opt?){
@@ -1168,7 +1200,11 @@ function createNSElement(tagName, attr?, parant?){
   var el = document.createElementNS(ns, tagName);
   if(attr){
     for(var o in attr){
-      el.setAttribute(o, attr[o]);
+      if(o == "text"){
+        el.textContent = attr[o];
+      }else{
+        el.setAttribute(o, attr[o]);
+      }
     }
   }
   (parant || document["rootElement"]).appendChild(el);
@@ -1268,6 +1304,22 @@ export function getSoundfontUrl (name, sf?, format?) {
 ////
 ////
 
+function createButton(text, opt?){
+  opt = opt || {};
+  var g = createNSElement("g", {transform:`translate(${opt.x||0},${opt.y||0})`}) as any;
+  var txt = createNSElement("text", {x:0, y:0, text:text, fill:opt.color||"black"}, g) as any;
+  var r = txt.getBBox();
+  txt.setAttribute("pointer-events", "none");
+  var rect = createNSElement("rect", {x:r.x, y:r.y, width:r.width, height:r.height, fill:opt.fill||"white", stroke:opt.stroke||"black"}, g) as any;
+  rect.style.cursor = "pointer";
+  g.insertBefore(rect, txt);
+  g._text = txt;
+  g._rect = rect;
+  if(opt.click){
+    g.addEventListener("click", opt.click);
+  }
+  return g;
+}
 
 var synth;
 
@@ -1345,29 +1397,30 @@ export function init(data, opt?){
 
 
   function createPlayBtn(callback){
-    var g = createNSElement("g", {x:10, y:10}) as any;
-    var btn = createNSElement("rect", {
-      width: 70,
-      height: 20,
-      x: 10,
-      y: 5
-    }, g) as any;
-    var txt = createNSElement("text", {
-      x: 10,
-      y: 20
-    }, g);
-    txt.textContent = "재생/정지";
-    txt.setAttribute("pointer-events", "none");
-    g.btn = btn;
+    var g = createButton("재생/정지", {x:10, y:10}) as any;
+    //var g = createNSElement("g", {x:10, y:10}) as any;
+    // var btn = createNSElement("rect", {
+    //   width: 70,
+    //   height: 20,
+    //   x: 10,
+    //   y: 5
+    // }, g) as any;
+    // var txt = createNSElement("text", {
+    //   x: 10,
+    //   y: 20
+    // }, g);
+    // txt.textContent = "재생/정지";
+    // txt.setAttribute("pointer-events", "none");
+    //g.btn = g._rect;
     g.addEventListener("click", callback);
     g.setColor = function(color){
-      btn.style.fill = color;
+      g._rect.style.fill = color;
     }
     g.activeColor = function(){
-      btn.style.fill = "rgb(53, 236, 31)";
+      g._rect.style.fill = "rgb(53, 236, 31)";
     }
     g.deactiveColor = function(){
-      btn.style.fill = "rgb(238, 51, 25)";
+      g._rect.style.fill = "rgb(238, 51, 25)";
     }
     return g;
   }
