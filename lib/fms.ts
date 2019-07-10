@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.35";
+var version = "0.36";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1151,7 +1151,7 @@ export function ready(data, opt?){
     loader.load(["http://gleitz.github.io/midi-js-soundfonts/MusyngKite/names.json"], function(evalList){
       msg("악보 연주가 가능한 모드입니다. 연주준비를 원하시면 악기를 선택해주세요");
       var instList = evalList[0];
-      var sx=100, x=sx, y=25, gapX=10, gapY=10, limitX=1200;
+      var sx=100, x=sx, y=45, gapX=10, gapY=10, limitX=1200;
       instList.forEach(name=>{
         var btn = createButton(name, {x:x, y:y, click:function(){
           go(name);
@@ -1397,7 +1397,7 @@ export function init(data, opt?){
 
 
   function createPlayBtn(callback){
-    var g = createButton("재생/정지", {x:10, y:10}) as any;
+    var g = createButton("재생/정지", {x:10, y:20}) as any;
     //var g = createNSElement("g", {x:10, y:10}) as any;
     // var btn = createNSElement("rect", {
     //   width: 70,
