@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.39";
+var version = "0.40";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1153,7 +1153,7 @@ export function ready(data, opt?){
       msg("악기를 선택하면 연주를 시작합니다.");
       var instList = evalList[0];
       var sx=10, x=sx, y=10, gapX=10, gapY=10, limitX=1200;
-      var g = createNSElement("g", {x:0, y:45});
+      var g = createNSElement("g", {x:0, y:30});
       var bgRect = createNSElement("rect", {x:0, y:0, width:1200, height:25, fill:"gray", stroke:"black"}, g);
       instList.forEach(name=>{
         var btn = createButton(name, {x:x, y:y, click:function(){
@@ -1173,12 +1173,6 @@ export function ready(data, opt?){
       })
     })
   }
-
-    // document["rootElement"].addEventListener("click", function rootClick(){
-    //   document["rootElement"].removeEventListener("click", rootClick);
-    //   console.error("start loading");
-    //   loadAndInit(data, opt);
-    // });
 }
 
 export function loadAndInit(data, opt?){
@@ -1321,8 +1315,10 @@ function createButton(text, opt?, parent?){
   var g = createNSElement("g", {transform:`translate(${opt.x||0},${opt.y||0})`}, parent) as any;
   var txt = createNSElement("text", {x:0, y:0, text:text, fill:opt.color||"black"}, g) as any;
   var r = txt.getBBox();
+  //r.y = -r.y;
+  txt.setAttribute("y", `${-r.y}`);
   txt.setAttribute("pointer-events", "none");
-  var rect = createNSElement("rect", {x:r.x, y:r.y, width:r.width, height:r.height, fill:opt.fill||"white", stroke:opt.stroke||"black"}, g) as any;
+  var rect = createNSElement("rect", {x:r.x, y:0, width:r.width, height:r.height, fill:opt.fill||"white", stroke:opt.stroke||"black"}, g) as any;
   rect.style.cursor = "pointer";
   g.insertBefore(rect, txt);
   g._text = txt;
