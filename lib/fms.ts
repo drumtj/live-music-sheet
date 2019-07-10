@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.38";
+var version = "0.39";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1206,10 +1206,14 @@ var ns = "http://www.w3.org/2000/svg";
 var progressText;
 function createNSElement(tagName, attr?, parant?){
   var el = document.createElementNS(ns, tagName);
+  var isGtagSettedPos;
   if(attr){
     for(var o in attr){
       if(o == "text"){
         el.textContent = attr[o];
+      }else if(tagName == "g" && o == "x" || o == "y" && !isGtagSettedPos){
+        el.setAttribute("transform", `translate(${attr.x||0},${attr.y||0})`);
+        isGtagSettedPos = true;
       }else{
         el.setAttribute(o, attr[o]);
       }
