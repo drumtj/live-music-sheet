@@ -2,7 +2,7 @@ declare var Tone;
 declare var Vex;
 declare var Soundfont;
 
-var version = "0.40";
+var version = "0.41";
 
 function createPlayData(data){
   let t = Tone.Time("16n").toSeconds();
@@ -1149,7 +1149,7 @@ export function ready(data, opt?){
     })
   }else{
     msg("악기 목록 로딩중..");
-    loader.load(["http://gleitz.github.io/midi-js-soundfonts/MusyngKite/names.json"], function(evalList){
+    loader.load(["https://gleitz.github.io/midi-js-soundfonts/MusyngKite/names.json"], function(evalList){
       msg("악기를 선택하면 연주를 시작합니다.");
       var instList = evalList[0];
       var sx=10, x=sx, y=10, gapX=10, gapY=10, limitX=1200;
